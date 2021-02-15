@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:20.04
 MAINTAINER Josh Lukens <jlukens@botch.com>
 
 ENV SQUEEZE_VOL /srv/squeezebox
@@ -8,22 +8,22 @@ ENV BASESERVER_URL=http://downloads.slimdevices.com/nightly/
 ENV RELEASE=8.0
 ENV PERL_MM_USE_DEFAULT 1
 
-RUN buildDeps='build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev python-pip python-dev' && \
+RUN buildDeps='build-essential libssl-dev libffi-dev libxml2-dev libxslt1-dev python3-dev python3-pip' && \
         apt-get update && \
 	apt-get -y install sudo curl wget faad flac lame sox libio-socket-ssl-perl libpython2.7 libfreetype6 \
              libfont-freetype-perl libcrypt-openssl-rsa-perl libio-socket-inet6-perl libwww-perl \
              libcrypt-openssl-bignum-perl libcrypt-openssl-random-perl libcrypt-ssleay-perl avahi-utils ffmpeg \
-             libinline-python-perl libnet-ssleay-perl opus-tools $buildDeps && \
-	MEDIAFILE=`curl -Lsf -o - "${BASESERVER_URL}?ver=${RELEASE}" | grep _amd64.deb | sed -e '$!d' -e 's/.*href="//' -e 's/".*//'` && \
+             libinline-python-perl libnet-ssleay-perl opus-tools $buildDeps
+RUN MEDIAFILE=`curl -Lsf -o - "${BASESERVER_URL}?ver=${RELEASE}" | grep _amd64.deb | sed -e '$!d' -e 's/.*href="//' -e 's/".*//'` && \
 	MEDIASERVER_URL="${BASESERVER_URL}${MEDIAFILE}" && \
         echo Downloading ${MEDIASERVER_URL} && \
 	curl -Lsf -o /tmp/logitechmediaserver.deb $MEDIASERVER_URL && \
 	dpkg -i /tmp/logitechmediaserver.deb && \
 	rm -rf /usr/share/squeezeboxserver/CPAN/Font && \
 	rm -f /tmp/logitechmediaserver.deb && \
-	pip install --upgrade pip && \
+	python3 -m pip install --upgrade pip && \
         hash -r pip && \
-	pip install gmusicapi==12.1.0 && \
+	python3 -m pip install gmusicapi==12.1.0 && \
 	cpan App::cpanminus && \
 	cpanm --notest Inline && \
 	cpanm --notest Inline::Python && \
