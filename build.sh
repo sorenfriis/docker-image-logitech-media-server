@@ -1,3 +1,6 @@
 #!/bin/sh
 
-docker build . -t sorenfriis/logitech-media-server
+docker build \
+  --no-cache \
+  . \
+  -t sorenfriis/logitech-media-server
